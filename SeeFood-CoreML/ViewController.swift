@@ -27,43 +27,30 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     func detect(image: CIImage) {
-        
+   
         // Load the ML model through its generated class
         guard let model = try? VNCoreMLModel(for: MobileNetV2().model) else {
             fatalError("can't load ML model")
         }
-        
+
+
         let request = VNCoreMLRequest(model: model) { request, error in
             guard let results = request.results as? [VNClassificationObservation],
                 let topResult = results.first
                 else {
                     fatalError("unexpected result type from VNCoreMLRequest")
             }
-            
+
             print("topResult=\(topResult.identifier)")
 
             DispatchQueue.main.async {
                 self.itemDescription.text = topResult.identifier
             }
-            
-//            if topResult.identifier.contains("hotdog") {
-//                DispatchQueue.main.async {
-//                    self.navigationItem.title = "Hotdog!"
-//                    self.navigationController?.navigationBar.barTintColor = UIColor.green
-//                    self.navigationController?.navigationBar.isTranslucent = false
-//                }
-//            }
-//            else {
-//                DispatchQueue.main.async {
-//                    self.navigationItem.title = topResult.identifier
-//                    self.navigationController?.navigationBar.barTintColor = UIColor.blue
-//                    self.navigationController?.navigationBar.isTranslucent = false
-//                }
-//            }
+
         }
-        
+
         let handler = VNImageRequestHandler(ciImage: image)
-        
+
         do {
             try handler.perform([request])
         }
